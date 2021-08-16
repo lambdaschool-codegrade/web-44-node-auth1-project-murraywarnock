@@ -2,11 +2,11 @@ const { findBy } = require('../users/users-model');
 
 
 function restricted(req, res, next) {
-  // if (req.session.user) { // session exists
+  if (req.session.user) { // session exists
     next();
-  // } else {
-  //   next({ status: 401, message: 'You shall not pass!' });
-  // }
+  } else {
+    next({ status: 401, message: 'You shall not pass!' });
+  }
 }
 
 /*
