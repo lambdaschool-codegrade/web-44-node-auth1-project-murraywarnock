@@ -2,6 +2,8 @@ const express = require("express");
 const helmet = require("helmet");
 const cors = require("cors");
 const session = require('express-session');
+const Store = require('connect-session-knex')(session);
+const knex = require('../data/db-config');
 
 const usersRouter = require('./users/users-router');
 const authRouter = require('./auth/auth-router');
@@ -21,23 +23,32 @@ const authRouter = require('./auth/auth-router');
 
 const server = express();
 
-server.use(helmet());
-server.use(express.json());
-server.use(cors());
+
 server.use(session({
-  name: 'monkey', // the name of the sesssionId
-  secret: 'make it long and random', // the sessionId is actually encrypted
+  name: 'chocolatechip', // the name of the sesssionId
+  secret: 'make it long and random', 
   cookie: {
-    maxAge: 1000 * 60 * 60,
-    secure: false, // in prod it should be true (if true, only over HTTPS)
-    httpOnly: false, // make it true if possible (if true, the javascript cannot read the cookie)
-  },
+    maxAge: 1000 * 60 * 10,
+    secure: false, 
+    httpOnly: false, 
+    // samesite: 'none'
+},
+  store: new Store({
+    knex,
+    createTable: true,
+    clearInterval: 1000 * 60 * 10,
+    tablename: 'sessions',
+    sidfieldname: 'sid',
+  }),
   rolling: true, // push back the expiration date of cookie
   resave: false, // ignore for now
   saveUninitialized: false, // if false, sessions are not stored "by default"
 }));
+server.use(helmet());
+server.use(express.json());
+server.use(cors());
 
-// server.use('/api/users', usersRouter);
+server.use('/api/users', usersRouter);
 server.use('/api/auth', authRouter);
 
 server.get("/", (req, res) => {

@@ -43,15 +43,14 @@ const {
 
 router.post('/login', checkUsernameExists, async (req, res, next) => {
   try {
-    const { username, password } = req.body;
+    const { username, password } = req.user;
     // does username correspond to an existing user?
-    const [user] = await findBy({ username }); 
-    if (user && bcrypt.compareSync(password, user.password)) {
-      console.log(user);
+   if (bcrypt.compareSync(req.body.password, password)) {
+      console.log(req.user);
       console.log(req.session);
       // we have determined the username and password are legit
       // we have to start a session with this user!!!!
-      req.session.user = user;
+      req.session.user = req.user;
       // 1- a cookie will be set on the client with a sessionId
       // 2- the sessionId will also be stored in the server (the session)
       res.json({ message: `Welcome ${username}!` })
@@ -78,5 +77,8 @@ router.post('/login', checkUsernameExists, async (req, res, next) => {
     "message": "no session"
   }
  */
+router.get('/logout', (req, res, next) =>{
+  res.json("logout");
+});
 
 module.exports = router;

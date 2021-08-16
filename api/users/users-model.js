@@ -5,8 +5,7 @@ const db = require("../../data/db-config");
  */
 function find() {
   return db("users")
-    .select("user_id", "username")
-    .orderBy("user_id");
+    .select("user_id", "username");
 }
 
 /**
@@ -14,8 +13,7 @@ function find() {
  */
 function findBy(filter) {
   return db("users")
-    .where(filter)
-    .orderBy("user_id").first(); // []
+    .where(filter);
 }
 
 /**
