@@ -37,9 +37,12 @@ const {
      const { username, password } = req.body;
      const hash = bcrypt.hashSync(password, 8);
      const user = { username, password: hash };
-     const createdUser = await add(user);
+     const newUser = await add(user);
  
-     res.status(201).json(createdUser);
+     res.status(201).json({ 
+       user_id: newUser.user_id,
+       username: newUser.username,
+      });
    } catch (err) {
      next(err);
    }
