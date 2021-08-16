@@ -1,3 +1,6 @@
+const { findBy } = require('../users/users-model');
+
+
 function restricted(req, res, next) {
   if (req.session.user) { // session exists
     next();
@@ -14,8 +17,20 @@ function restricted(req, res, next) {
     "message": "Username taken"
   }
 */
-function checkUsernameFree() {
-
+async function checkUsernameFree(req, res, next) {
+  try {
+    const { username } = req.body;
+    const [user] = await findBy({ username }); 
+    if (user) {
+console.log('user :>> ', user);
+      req.user = user;
+      res.status(422).json({ message: "Username taken" })
+    } else {
+      next(); // username is not taken
+    }
+  } catch (err) {
+    next(err);
+  }
 }
 
 /*
@@ -26,8 +41,23 @@ function checkUsernameFree() {
     "message": "Invalid credentials"
   }
 */
-function checkUsernameExists() {
-
+async function checkUsernameExists(req, res, next) {
+  try {
+    const { username } = req.body;
+    const [user] = await findBy({ username }); 
+    if (user) {
+      console.log(user)
+      req.user = user;
+      next();
+    } else {
+      next({ 
+        status: 401, 
+        message: "Invalid credentials" 
+      })
+    }
+  } catch (err) {
+    next(err)
+  }
 }
 
 /*
@@ -38,7 +68,7 @@ function checkUsernameExists() {
     "message": "Password must be longer than 3 chars"
   }
 */
-function checkPasswordLength() {
+function checkPasswordLength(req, res, next) {
 
 }
 
