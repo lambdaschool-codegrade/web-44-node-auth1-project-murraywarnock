@@ -44,7 +44,7 @@ console.log('user :>> ', user);
 async function checkUsernameExists(req, res, next) {
   try {
     const { username } = req.body;
-    const [user] = await findBy({ username }); 
+    const user = await findBy({ username }); 
     if (user) {
       console.log(user)
       req.user = user;
