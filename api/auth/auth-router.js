@@ -45,14 +45,12 @@ router.post('/login', checkUsernameExists, async (req, res, next) => {
   try {
     const { username, password } = req.user;
    if (bcrypt.compareSync(req.body.password, password)) {
-      console.log(req.user);
-      console.log(req.session);
       req.session.user = req.user;
       // 1- a cookie will be set on the client with a sessionId
       // 2- the sessionId will also be stored in the server (the session)
       res.json({ message: `Welcome ${username}!` })
     } else {
-      next({ status: 401, message: 'bad credentials' })
+      next({ status: 401, message: "Invalid credentials" })
     }
   } catch (err) {
     next(err);
@@ -75,7 +73,16 @@ router.post('/login', checkUsernameExists, async (req, res, next) => {
   }
  */
 router.get('/logout', (req, res, next) =>{
-  res.json("logout");
+  if (req.session.user) {
+    req.session.destroy(err => {
+    if (err) {
+      next(err);
+    } else {
+      res.status(200).json({ message: 'logged out' });
+    }});
+  } else {
+    res.status(200).json({ message: 'no session' });
+  }
 });
 
 module.exports = router;
